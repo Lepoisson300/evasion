@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #810100;
+  /* Cherry Red */
+  --color-on-primary: #EDEBDD;
+  /* Cotton */
+  --color-secondary: #630000;
+  /* Maroon */
+  --color-on-secondary: #EDEBDD;
+  /* Cotton */
+  --color-accent: #810100;
+  /* Cherry Red */
+  --color-on-accent: #EDEBDD;
+  /* Cotton */
+  --color-background: #1B1717;
+  /* Noir Black */
+  --color-foreground: #EDEBDD;
+  /* Cotton */
+  --color-card: #1B1717;
+  /* Noir Black */
+  --color-card-foreground: #EDEBDD;
+  /* Cotton */
+  --color-muted: #630000;
+  /* Maroon */
+  --color-muted-foreground: #EDEBDD;
+  /* Cotton */
+  --color-border: #630000;
+  /* Maroon */
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: 'Open Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    cursor: none !important;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Poppins', sans-serif;
+}
+
+
+.dark-glass {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.diagonal-slice {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  transition: flex 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .diagonal-slice {
+    transform: skewX(-15deg);
+    border-bottom: none;
+    border-right: 2px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.diagonal-slice:hover,
+.diagonal-slice.active {
+  flex: 3;
+}
+
+.diagonal-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: filter 0.5s ease;
+  filter: grayscale(100%);
+}
+
+@media (min-width: 768px) {
+  .diagonal-content {
+    width: 100vw;
+    transform: skewX(15deg);
+    margin-left: -40vw;
+    /* Adjust based on container */
+  }
+}
+
+.diagonal-slice:hover .diagonal-content,
+.diagonal-slice.active .diagonal-content {
+  filter: grayscale(0%);
+}
+
+.cursor-ring {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  mix-blend-mode: difference;
+  backdrop-filter: blur(4px);
+  transition: width 0.2s, height 0.2s;
+}
