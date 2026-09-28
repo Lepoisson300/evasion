@@ -7,6 +7,7 @@ export default function Home() {
   const [activeProject, setActiveProject] = useState(2);
   const [lang, setLang] = useState("fr");
   const [windowSize, setWindowSize] = useState({ width: 1920, height: 1080 });
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -25,11 +26,11 @@ export default function Home() {
   }, []);
 
   const projects = [
-    { id: 1, num: "01", title: "RESIDENTIAL", img: "/evasion/project_1.png" },
-    { id: 2, num: "02", title: "COMMERCIAL", img: "/evasion/project_2.png" },
-    { id: 3, num: "03", title: "ALPHA", img: "/evasion/project_3.png" },
-    { id: 4, num: "04", title: "HOSPITALITY", img: "/evasion/project_4.png" },
-    { id: 5, num: "05", title: "RETAIL", img: "/evasion/project_5.png" }
+    { id: 1, num: "01", title: "RESIDENTIAL", img: "/evasion/project_1.png", descEn: "A profound exploration of structural brutalism and delicate elegance in a modern living space.", descFr: "Une exploration profonde du brutalisme structurel et de l'élégance délicate dans un espace de vie moderne." },
+    { id: 2, num: "02", title: "COMMERCIAL", img: "/evasion/project_2.png", descEn: "Redefining workspace aesthetics to foster creativity and emotional resonance.", descFr: "Redéfinir l'esthétique de l'espace de travail pour favoriser la créativité et la résonance émotionnelle." },
+    { id: 3, num: "03", title: "ALPHA", img: "/evasion/project_3.png", descEn: "Our signature concept, blending raw natural materials with advanced glassmorphism.", descFr: "Notre concept signature, mêlant matériaux naturels bruts et glassmorphisme avancé." },
+    { id: 4, num: "04", title: "HOSPITALITY", img: "/evasion/project_4.png", descEn: "Elevating the human experience in hotels and resorts through careful light orchestration.", descFr: "Élever l'expérience humaine dans les hôtels et les complexes hôteliers grâce à une orchestration minutieuse de la lumière." },
+    { id: 5, num: "05", title: "RETAIL", img: "/evasion/project_5.png", descEn: "Striking retail environments that tell a story and captivate the consumer.", descFr: "Des environnements de vente au détail saisissants qui racontent une histoire et captivent le consommateur." }
   ];
 
   const t = {
@@ -83,12 +84,12 @@ export default function Home() {
     <main className="relative bg-background overflow-hidden">
       {/* Custom Cursor */}
       <div
-        className="md:flex cursor-ring pointer-events-none fixed top-0 left-0 w-24 h-24 border border-white/20 rounded-full z-[100] bg-white/10 backdrop-blur-lg transition-transform duration-75 ease-out items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-        style={{ transform: `translate(${cursorPos.x - 48}px, ${cursorPos.y - 48}px)` }}
+        className="hidden md:flex pointer-events-none fixed z-9999 top-0 left-0 w-14 h-14 border border-black/20 rounded-full z-[100] bg-white/10 backdrop-blur-lg items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+        style={{ transform: `translate3d(${cursorPos.x}px, ${cursorPos.y}px, 0) translate(-50%, -50%)` }}
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-80">
-          <path d="M7 17h10V7" />
-          <path d="M17 17 7 7" />
+          <path d="M7 17L17 7" />
+          <path d="M7 7h10v10" />
         </svg>
       </div>
 
@@ -199,10 +200,10 @@ export default function Home() {
       <section id="projects" className="relative h-screen w-full bg-background flex flex-col md:flex-row overflow-hidden">
         {/* Left Side Branding */}
         <div className="w-full md:w-1/4 h-auto md:h-full py-12 md:py-0 bg-card flex flex-col justify-center items-center md:items-start text-center md:text-left px-6 md:px-12 z-10 shadow-2xl">
-          <h2 className="font-display text-3xl md:text-4xl font-bold tracking-widest mb-4 uppercase">
+          <h2 className="font-display text-4xl md:text-7xl font-bold tracking-widest mb-4 uppercase">
             {t[lang].curated} <br className="hidden md:block" /> <span className="text-accent">{t[lang].projects}</span>
           </h2>
-          <p className="font-sans text-foreground/70 max-w-xs mb-8 md:mb-12 text-sm leading-relaxed">
+          <p className="font-sans text-foreground/70 max-w-2xl mb-8 md:mb-12 text-[17px] leading-relaxed">
             {t[lang].projDesc}
           </p>
           <div className="flex gap-4">
@@ -219,7 +220,10 @@ export default function Home() {
               key={project.id}
               className={`diagonal-slice flex-1 ${activeProject === index ? 'active flex-[3_3_0%]' : ''}`}
               onMouseEnter={() => setActiveProject(index)}
-              onClick={() => setActiveProject(index)}
+              onClick={() => {
+                setActiveProject(index);
+                setSelectedProject(project);
+              }}
             >
               <div
                 className="diagonal-content"
@@ -316,6 +320,40 @@ export default function Home() {
         <span className="hidden md:inline text-foreground/20">•</span>
         <a href="#" className="hover:text-accent transition-colors">{t[lang].footerLinks.legal}</a>
       </footer>
+
+      {/* PROJECT MODAL */}
+      {selectedProject && (
+        <div className="fixed inset-0 z-[50] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-opacity duration-300" onClick={() => setSelectedProject(null)}>
+          <div
+            className="relative w-full max-w-5xl bg-card border border-white/10 rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-[0_0_50px_rgba(0,0,0,0.8)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-primary text-white rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-md"
+              onClick={() => setSelectedProject(null)}
+            >
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            {/* Modal Image */}
+            <div className="w-full md:w-1/2 h-64 md:h-[60vh] bg-black relative">
+              <img src={selectedProject.img} alt={selectedProject.title} className="w-full h-full object-cover" />
+            </div>
+
+            {/* Modal Content */}
+            <div className="w-full md:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-card relative">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+              <span className="font-display text-accent text-xl md:text-2xl font-bold mb-2 tracking-widest">{selectedProject.num}</span>
+              <h3 className="font-sans text-3xl md:text-5xl font-bold text-foreground tracking-widest uppercase mb-6">{selectedProject.title}</h3>
+              <div className="w-16 h-1 bg-accent mb-8"></div>
+              <p className="font-sans text-foreground/80 text-lg md:text-xl leading-relaxed font-light">
+                {lang === 'fr' ? selectedProject.descFr : selectedProject.descEn}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
