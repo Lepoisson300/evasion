@@ -25,11 +25,11 @@ export default function Home() {
   }, []);
 
   const projects = [
-    { id: 1, num: "01", title: "RESIDENTIAL", img: "/project_1.png" },
-    { id: 2, num: "02", title: "COMMERCIAL", img: "/project_2.png" },
-    { id: 3, num: "03", title: "ALPHA", img: "/project_3.png" },
-    { id: 4, num: "04", title: "HOSPITALITY", img: "/project_4.png" },
-    { id: 5, num: "05", title: "RETAIL", img: "/project_5.png" }
+    { id: 1, num: "01", title: "RESIDENTIAL", img: "/evasion/project_1.png" },
+    { id: 2, num: "02", title: "COMMERCIAL", img: "/evasion/project_2.png" },
+    { id: 3, num: "03", title: "ALPHA", img: "/evasion/project_3.png" },
+    { id: 4, num: "04", title: "HOSPITALITY", img: "/evasion/project_4.png" },
+    { id: 5, num: "05", title: "RETAIL", img: "/evasion/project_5.png" }
   ];
 
   const t = {
@@ -115,7 +115,7 @@ export default function Home() {
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center z-0 opacity-40"
-          style={{ backgroundImage: 'url("/hero_bg.png")' }}
+          style={{ backgroundImage: 'url("/evasion/hero_bg.png")' }}
         ></div>
 
         {/* Navigation */}
@@ -160,7 +160,7 @@ export default function Home() {
           <div className="w-full md:w-1/2 h-[40vh] md:h-[80vh] relative flex items-center justify-center px-4 md:px-0">
             <div className="w-full h-full max-w-md bg-black" style={{ clipPath: 'polygon(15% 0, 100% 0, 85% 100%, 0% 100%)' }}>
               <img
-                src="/maud_profile.png"
+                src="/evasion/maud_profile.png"
                 alt="Maud Terrade Martinez Cruz"
                 className="w-full h-full object-cover grayscale opacity-90 hover:opacity-100 transition-opacity duration-500"
               />
