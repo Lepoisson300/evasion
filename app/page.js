@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MeshGradient } from '@paper-design/shaders-react';
 
 export default function Home() {
@@ -8,6 +8,27 @@ export default function Home() {
   const [lang, setLang] = useState("fr");
   const [windowSize, setWindowSize] = useState({ width: 1920, height: 1080 });
   const [selectedProject, setSelectedProject] = useState(null);
+  const carouselRef = useRef(null);
+
+  // Scroll carousel to active item when it changes
+  useEffect(() => {
+    if (carouselRef.current) {
+      const container = carouselRef.current;
+      const activeCard = container.children[activeProject];
+      if (activeCard) {
+        const containerRect = container.getBoundingClientRect();
+        const cardRect = activeCard.getBoundingClientRect();
+
+        const cardCenter = cardRect.left + (cardRect.width / 2);
+        const containerCenter = containerRect.left + (containerRect.width / 2);
+
+        container.scrollTo({
+          left: container.scrollLeft + (cardCenter - containerCenter),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [activeProject]);
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -133,7 +154,7 @@ export default function Home() {
         {/* Central Glass Panel */}
         <div className="bg-white/1 backdrop-blur-sm relative z-10 w-full max-w-7xl p-10 py-16 md:p-32 lg:p-52 rounded-2xl flex flex-col items-center text-center">
           <h1 className="font-display text-4xl md:text-6xl lg:text-8xl font-bold tracking-tight mb-6 leading-tight">
-            {t[lang].heroLine1} <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-foreground to-muted">{t[lang].heroLine2}</span>
+            {t[lang].heroLine1} <br /> <span className="bg-clip-text  to-muted">{t[lang].heroLine2}</span>
           </h1>
           <p className="font-sans text-lg md:text-xl text-foreground/80 font-light max-w-2xl">
             {t[lang].heroSub}
@@ -184,65 +205,137 @@ export default function Home() {
 
         {/* Bottom Bar */}
         <div className="absolute bottom-6 md:bottom-12 left-1/2 -translate-x-1/2 w-11/12 md:w-3/4 max-w-4xl flex h-12 md:h-14 z-20">
-          <div className="flex-1 bg-[#4A4A4A] flex items-center justify-center text-[#EDEBDD] text-[10px] sm:text-xs md:text-sm tracking-widest font-bold cursor-pointer hover:bg-primary transition-colors text-center" style={{ clipPath: 'polygon(0 0, 100% 0, 95% 100%, -5% 100%)' }}>
+          <div className="flex-1 bg-[#EFE3CE] flex items-center justify-center text-[#3f3f3f] text-[10px] sm:text-xs md:text-sm tracking-widest font-bold cursor-pointer hover:text-white hover:bg-primary transition-colors text-center" style={{ clipPath: 'polygon(0 0, 100% 0, 95% 100%, -5% 100%)' }}>
             PERSONAL PROFILE
           </div>
-          <div className="flex-1 bg-[#2C2C2C] flex items-center justify-center text-[#EDEBDD] text-[10px] sm:text-xs md:text-sm tracking-widest font-bold cursor-pointer hover:bg-primary transition-colors text-center" style={{ clipPath: 'polygon(5% 0, 100% 0, 95% 100%, 0 100%)', marginLeft: '-2%' }}>
+          <div className="flex-1 bg-[#E0D1B8] flex items-center justify-center text-[#3f3f3f] text-[10px] sm:text-xs md:text-sm tracking-widest font-bold cursor-pointer hover:text-white hover:bg-primary transition-colors text-center" style={{ clipPath: 'polygon(5% 0, 100% 0, 95% 100%, 0 100%)', marginLeft: '-2%' }}>
             LINKEDIN
           </div>
-          <div className="flex-1 bg-[#1B1717] flex items-center justify-center text-[#EDEBDD] text-[10px] sm:text-xs md:text-sm tracking-widest font-bold cursor-pointer hover:bg-primary transition-colors text-center" style={{ clipPath: 'polygon(5% 0, 100% 0, 95% 100%, 0 100%)', marginLeft: '-2%' }}>
+          <div className="flex-1 bg-[#C8B39A] flex items-center justify-center text-[#3f3f3f] text-[10px] sm:text-xs md:text-sm tracking-widest font-bold cursor-pointer hover:text-white hover:bg-primary transition-colors text-center" style={{ clipPath: 'polygon(5% 0, 100% 0, 95% 100%, 0 100%)', marginLeft: '-2%' }}>
             CONTACT
           </div>
         </div>
       </section>
 
-      {/* SECTION 3: PROJECTS (DIAGONAL ACCORDION) */}
-      <section id="projects" className="relative h-screen w-full bg-background flex flex-col md:flex-row overflow-hidden">
-        {/* Left Side Branding */}
-        <div className="w-full md:w-1/4 h-auto md:h-full py-12 md:py-0 bg-card flex flex-col justify-center items-center md:items-start text-center md:text-left px-6 md:px-12 z-10 shadow-2xl">
-          <h2 className="font-display text-4xl md:text-7xl font-bold tracking-widest mb-4 uppercase">
-            {t[lang].curated} <br className="hidden md:block" /> <span className="text-accent">{t[lang].projects}</span>
-          </h2>
-          <p className="font-sans text-foreground/70 max-w-2xl mb-8 md:mb-12 text-[17px] leading-relaxed">
-            {t[lang].projDesc}
-          </p>
-          <div className="flex gap-4">
-            {/* Social Icons (Placeholders) */}
-            <div className="w-8 h-8 rounded-full border border-muted flex items-center justify-center hover:bg-foreground hover:text-background transition-colors cursor-pointer">In</div>
-            <div className="w-8 h-8 rounded-full border border-muted flex items-center justify-center hover:bg-foreground hover:text-background transition-colors cursor-pointer">Be</div>
+      {/* SECTION 3: PROJECTS (CAROUSEL) */}
+      <section id="projects" className="relative h-screen w-full flex items-center overflow-hidden bg-black">
+        {/* Full-screen Background Images for smooth crossfade */}
+        {projects.map((project, index) => (
+          <div
+            key={`bg-${project.id}`}
+            className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${activeProject === index ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <img
+              src={project.img}
+              alt={project.title}
+              className="w-full h-full object-cover opacity-60 md:opacity-100"
+            />
           </div>
-        </div>
+        ))}
+        {/* Dark Overlay for readability - gradient on the left, darker at bottom */}
+        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-r from-black/95 via-black/50 to-transparent"></div>
+        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
 
-        {/* Right Side Diagonal Slices */}
-        <div className="w-full md:w-[120%] md:-ml-[10%] h-[60vh] md:h-full flex flex-col md:flex-row transform-none">
-          {projects.map((project, index) => (
-            <div
-              key={project.id}
-              className={`diagonal-slice flex-1 ${activeProject === index ? 'active flex-[3_3_0%]' : ''}`}
-              onMouseEnter={() => setActiveProject(index)}
-              onClick={() => {
-                setActiveProject(index);
-                setSelectedProject(project);
-              }}
-            >
-              <div
-                className="diagonal-content"
-                style={{ backgroundImage: `url(${project.img})` }}
-              ></div>
-              {/* Overlay for inactive states */}
-              <div className={`absolute inset-0 bg-black transition-opacity duration-500 ${activeProject === index ? 'opacity-20' : 'opacity-70'}`}></div>
+        <div className="relative z-10 w-full max-w-[1600px] mx-auto flex flex-col md:flex-row items-center h-full px-6 md:px-12 xl:px-24 pt-24 md:pt-0">
 
-              {/* Text Content inside Slice */}
-              <div className="absolute bottom-8 md:bottom-20 left-1/2 -translate-x-1/2 transform-none md:transform md:skewX(15deg) text-center whitespace-nowrap">
-                <span className={`block font-display font-light text-4xl md:text-6xl lg:text-8xl mb-1 md:mb-2 transition-colors duration-500 ${activeProject === index ? 'text-accent' : 'text-muted'}`}>
-                  {project.num}
-                </span>
-                <span className="block font-sans font-bold tracking-[0.3em] text-white uppercase text-xs md:text-sm lg:text-lg">
-                  {project.title}
+          {/* Left Side: Active Project Details */}
+          <div className="w-full md:w-5/12 text-left text-white flex flex-col justify-center mb-12 md:mb-0">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-8 h-[2px] bg-white"></div>
+              <span className="font-sans text-white/90 text-sm md:text-base tracking-widest uppercase font-semibold">
+                {t[lang].curated} - {projects[activeProject].title}
+              </span>
+            </div>
+
+            <h2 className="font-display text-5xl md:text-7xl lg:text-[90px] font-bold uppercase tracking-tight mb-6 leading-[0.9]">
+              {projects[activeProject].title}
+            </h2>
+
+            <p className="font-sans text-white/70 text-sm md:text-base font-light leading-relaxed max-w-md mb-10">
+              {lang === 'fr' ? projects[activeProject].descFr : projects[activeProject].descEn}
+            </p>
+
+            {/* Discover Button */}
+            <div className="flex items-center gap-0 group cursor-pointer w-fit" onClick={() => setSelectedProject(projects[activeProject])}>
+              <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center z-10 transition-transform duration-300 group-hover:scale-110 shadow-lg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              </div>
+              <div className="border border-white/30 rounded-r-full pl-6 pr-8 py-3 -ml-4 backdrop-blur-sm transition-all duration-300 group-hover:bg-white/10 group-hover:border-white/50 group-hover:pl-8">
+                <span className="font-sans text-xs uppercase tracking-widest font-bold text-white">
+                  {lang === 'fr' ? 'Découvrir le lieu' : 'Discover Location'}
                 </span>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Right Side: Cards Carousel */}
+          <div
+            ref={carouselRef}
+            className="w-full h-full md:w-7/12 flex items-center gap-6 md:gap-10 overflow-x-auto pb-8 md:pb-0 pl-4 md:pl-12 snap-x snap-mandatory"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {projects.map((project, index) => (
+              <div
+                key={project.id}
+                className={`relative flex-shrink-0 w-64 md:w-80 h-96 md:h-[450px] rounded-3xl overflow-hidden cursor-pointer snap-center transition-all duration-500 ease-out group ${activeProject === index ? 'opacity-100 ring-4 ring-accent ring-offset-4 ring-offset-black/50 -translate-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-10' : 'opacity-40 hover:opacity-70 hover:-translate-y-2 border border-white/20'}`}
+                onClick={() => setActiveProject(index)}
+              >
+                <img src={project.img} alt={project.title} className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${activeProject === index ? 'grayscale-0' : 'grayscale-[50%]'}`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity"></div>
+
+                {activeProject === index && (
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-accent/90 backdrop-blur-md flex items-center justify-center border border-white/30 animate-in fade-in zoom-in duration-300 shadow-xl">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--background)" stroke="var(--background)" strokeWidth="2"><path d="M8 5v14l11-7z" /></svg>
+                  </div>
+                )}
+
+                <div className="absolute bottom-8 left-8 right-8">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-6 h-[2px] ${activeProject === index ? 'bg-accent' : 'bg-white/70'}`}></div>
+                    <span className={`block text-xs font-bold tracking-widest uppercase ${activeProject === index ? 'text-accent' : 'text-white/90'}`}>{project.num}</span>
+                  </div>
+                  <h3 className={`font-display text-xl md:text-2xl font-bold uppercase tracking-widest leading-tight ${activeProject === index ? 'text-white' : 'text-white/70'}`}>{project.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+
+        {/* Bottom Navigation & Progress */}
+        <div className="absolute bottom-8 md:bottom-12 w-full max-w-[1600px] left-1/2 -translate-x-1/2 px-6 md:px-12 xl:px-24 z-20 flex items-center justify-between pointer-events-none">
+
+          {/* Left: Navigation Arrows */}
+          <div className="flex gap-4 md:gap-6 pointer-events-auto w-1/3">
+            <button
+              className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white/10 hover:border-white transition-all backdrop-blur-sm shadow-lg"
+              onClick={() => setActiveProject(prev => (prev > 0 ? prev - 1 : projects.length - 1))}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M15 18l-6-6 6-6" /></svg>
+            </button>
+            <button
+              className="w-14 h-14 md:w-16 md:h-16 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white/10 hover:border-white transition-all backdrop-blur-sm shadow-lg"
+              onClick={() => setActiveProject(prev => (prev < projects.length - 1 ? prev + 1 : 0))}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+          </div>
+
+          {/* Center: Progress Bar */}
+          <div className="flex-1 flex justify-center pointer-events-auto">
+            <div className="hidden md:flex w-64 lg:w-96 h-[2px] bg-white/20 relative rounded-full overflow-hidden">
+              <div
+                className="absolute top-0 left-0 h-full bg-accent transition-all duration-500 ease-out"
+                style={{ width: `${((activeProject + 1) / projects.length) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Right: Project Number */}
+          <div className="font-display text-5xl md:text-7xl lg:text-[100px] text-white font-light pointer-events-auto w-1/3 text-right">
+            {projects[activeProject].num}
+          </div>
+
         </div>
       </section>
 
@@ -253,7 +346,7 @@ export default function Home() {
           <MeshGradient
             width={windowSize.width}
             height={windowSize.height}
-            colors={["#710014", "#F2F1ED", "#938F8F", "#710014"]}
+            colors={["#FAF7F2", "#EFE3CE", "#C8B39A", "#9A8472"]}
             distortion={0.25}
             speed={0.45}
           />
@@ -313,7 +406,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 5: FOOTER */}
-      <footer className="w-full bg-background py-8 border-t border-white/5 flex flex-row md:flex-row items-center justify-center gap-6 text-sm font-sans text-foreground/50 z-20 relative">
+      <footer className="w-full py-8 border-t border-white/5 flex flex-row md:flex-row items-center justify-center gap-6 text-sm font-sans text-foreground/50 z-20 relative">
         <a href="#" className="hover:text-accent transition-colors">{t[lang].footerLinks.cgv}</a>
         <span className="hidden md:inline text-foreground/20">•</span>
         <a href="#" className="hover:text-accent transition-colors">{t[lang].footerLinks.privacy}</a>

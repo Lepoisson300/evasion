@@ -3,15 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #810100;
+  --color-primary: #41091A;
   /* Cherry Red */
-  --color-on-primary: #EDEBDD;
+  --color-on-primary: #EFE3CE;
   /* Cotton */
   --color-secondary: #630000;
   /* Maroon */
-  --color-on-secondary: #EDEBDD;
+  --color-on-secondary: #EFE3CE;
   /* Cotton */
-  --color-accent: #810100;
+  --color-accent: #41091A;
   /* Cherry Red */
   --color-on-accent: #EDEBDD;
   /* Cotton */
